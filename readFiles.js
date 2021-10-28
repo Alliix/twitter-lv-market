@@ -19,33 +19,41 @@ const readTweets = () => {
       );
       newTweets = JSON.parse(newTweets);
       newTweets.forEach((tweet) => {
-        brandConfig.brandConfig.forEach((brand) => {
-          switch (true) {
-            case brand.searchNames.some((n) => tweet.message.includes(n)):
-              let existingPeopleTweets = fs.readFileSync(
-                brand.peopleTweets,
-                "utf-8"
-              );
-              existingPeopleTweets = JSON.parse(existingPeopleTweets);
-              existingPeopleTweets.push(tweet);
-              const tweetsPeopleJson = JSON.stringify(existingPeopleTweets);
-              fs.writeFileSync(brand.peopleTweets, tweetsPeopleJson, "utf-8");
-              break;
-            case brand.accountName &&
-              tweet.userScreenName === brand.accountName:
-              let existingBrandTweets = fs.readFileSync(
-                brand.brandFile,
-                "utf-8"
-              );
-              existingBrandTweets = JSON.parse(existingBrandTweets);
-              existingBrandTweets.push(tweet);
-              const tweetsBrandJson = JSON.stringify(existingBrandTweets);
-              fs.writeFileSync(brand.brandFile, tweetsBrandJson, "utf-8");
-              break;
-            default:
-            // code block
-          }
-        });
+        if (!tweet.inReplyToStatusId) {
+          brandConfig.brandConfig.forEach((brand) => {
+            switch (true) {
+              case brand.searchNames.some((name) =>
+                tweet.message.match(
+                  new RegExp(
+                    ` (\\n)?(#)?${name}(\\n)? |^(\\n)?(#)?${name}|(#)?${name}(\\n)?$| (\\n)?@?${brand.accountName}(\\n)? |^(\\n)?@?${brand.accountName}|@?${brand.accountName}(\\n)?$`
+                  )
+                )
+              ):
+                let existingPeopleTweets = fs.readFileSync(
+                  brand.peopleTweets,
+                  "utf-8"
+                );
+                existingPeopleTweets = JSON.parse(existingPeopleTweets);
+                existingPeopleTweets.push(tweet);
+                const tweetsPeopleJson = JSON.stringify(existingPeopleTweets);
+                fs.writeFileSync(brand.peopleTweets, tweetsPeopleJson, "utf-8");
+                break;
+              case brand.accountName &&
+                tweet.userScreenName === brand.accountName:
+                let existingBrandTweets = fs.readFileSync(
+                  brand.brandFile,
+                  "utf-8"
+                );
+                existingBrandTweets = JSON.parse(existingBrandTweets);
+                existingBrandTweets.push(tweet);
+                const tweetsBrandJson = JSON.stringify(existingBrandTweets);
+                fs.writeFileSync(brand.brandFile, tweetsBrandJson, "utf-8");
+                break;
+              default:
+                break;
+            }
+          });
+        }
       });
     });
   });
