@@ -19,7 +19,7 @@ const readTweets = () => {
       );
       newTweets = JSON.parse(newTweets);
       newTweets.forEach((tweet) => {
-        if (!tweet.inReplyToStatusId) {
+        if (!tweet.inReplyToStatusId && !tweet.inReplyToUserId) {
           brandConfig.brandConfig.forEach((brand) => {
             switch (true) {
               case brand.searchNames.some((name) =>
