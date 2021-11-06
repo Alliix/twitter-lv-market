@@ -6,12 +6,11 @@ const tweetIsInArray = (newTweet, existingTweets) =>
     (existingTweet) => newTweet.tweetId === existingTweet.tweetId
   );
 
-const returnOriginalTweet = (newTweet, existingTweets) => {
+const returnOriginalTweet = (newTweet, existingTweets) =>
   newTweet.retweetedId &&
-    existingTweets.find(
-      (existingTweet) => newTweet.retweetedId === existingTweet.tweetId
-    );
-};
+  existingTweets.find(
+    (existingTweet) => newTweet.retweetedId === existingTweet.tweetId
+  );
 
 const renameFiles = () => {
   const dir =
@@ -43,11 +42,11 @@ const renameFiles = () => {
 };
 
 const readTweets = () => {
-  // directory path
   const dir =
     "./tweet-corpus/latvian-tweet-corpus-all-json-files-up-to-27-04-2021";
+  let totalReadTweetCount = 0;
+  let totalWrittenTweetCount = 0;
 
-  // list all files in the directory
   fs.readdir(dir, (err, files) => {
     if (err) {
       throw err;
@@ -59,11 +58,10 @@ const readTweets = () => {
           files.length
         })`
       );
-      let newTweets = fs.readFileSync(
-        `./tweet-corpus/latvian-tweet-corpus-all-json-files-up-to-27-04-2021/${file}`,
-        "utf-8"
-      );
+      let newTweets = fs.readFileSync(`${dir}/${file}`, "utf-8");
       newTweets = JSON.parse(newTweets);
+      console.log(`Reading ${newTweets.length} tweets`);
+      totalReadTweetCount = totalReadTweetCount + newTweets.length;
       newTweets.forEach((tweet) => {
         if (!tweet.inReplyToStatusId && !tweet.inReplyToUserId) {
           brandConfig.brandConfig.forEach((brand) => {
@@ -88,44 +86,50 @@ const readTweets = () => {
                 existingBrandTweetsToCheckRetweet = JSON.parse(
                   existingBrandTweetsToCheckRetweet
                 );
-                //handle retweet
+                //check retweet in people tweets
                 const originalTweetInPeopleTweets = returnOriginalTweet(
                   tweet,
                   existingPeopleTweets
                 );
                 if (originalTweetInPeopleTweets) {
                   existingPeopleTweets = existingPeopleTweets.map(
-                    (existingTweet) => {
+                    (existingTweet) =>
+                      existingTweet.tweetId ===
+                      originalTweetInPeopleTweets.tweetId
+                        ? {
+                            ...existingTweet,
+                            retweetCount: existingTweet.retweetCount + 1,
+                          }
+                        : existingTweet
+                  );
+                }
+                //check retweet in brand tweets
+                const originalTweetInBrandTweets = returnOriginalTweet(
+                  tweet,
+                  existingBrandTweetsToCheckRetweet
+                );
+                if (originalTweetInBrandTweets) {
+                  existingBrandTweetsToCheckRetweet =
+                    existingBrandTweetsToCheckRetweet.map((existingTweet) => {
                       if (
                         existingTweet.tweetId ===
-                        originalTweetInPeopleTweets.tweetId
+                        originalTweetInBrandTweets.tweetId
                       )
-                        existingTweet.retweetCount++;
-                    }
-                  );
-                } else {
-                  const originalTweetInBrandTweets = returnOriginalTweet(
-                    tweet,
-                    existingBrandTweetsToCheckRetweet
-                  );
-                  if (originalTweetInBrandTweets) {
-                    existingBrandTweetsToCheckRetweet =
-                      existingBrandTweetsToCheckRetweet.map((existingTweet) => {
-                        if (
-                          existingTweet.tweetId ===
-                          originalTweetInBrandTweets.tweetId
-                        )
-                          existingTweet.retweetCount++;
-                      });
-                  } else {
-                    //check unique
-                    if (!tweetIsInArray(tweet, existingPeopleTweets)) {
-                      existingPeopleTweets.push({
-                        ...tweet,
-                        retweetCount: 0,
-                      });
-                    }
-                  }
+                        existingTweet.retweetCount + 1;
+                    });
+                }
+                //check unique
+                if (
+                  !originalTweetInPeopleTweets &&
+                  !originalTweetInBrandTweets &&
+                  !tweetIsInArray(tweet, existingPeopleTweets) &&
+                  !tweet.retweetedId
+                ) {
+                  totalWrittenTweetCount++;
+                  existingPeopleTweets.push({
+                    ...tweet,
+                    retweetCount: 0,
+                  });
                 }
                 const tweetsPeopleJson = JSON.stringify(existingPeopleTweets);
                 fs.writeFileSync(brand.peopleTweets, tweetsPeopleJson, "utf-8");
@@ -153,16 +157,18 @@ const readTweets = () => {
           });
         }
       });
+      console.log(
+        `Read tweets: ${totalReadTweetCount}. Written tweets: ${totalWrittenTweetCount}`
+      );
     });
   });
 };
 
 const cleanFiles = () => {
-  // directory path
   const dir = "./brandTweets";
   const dir2 = "./peopleTweets";
 
-  // list all files in the directory
+  // brand tweets
   fs.readdir(dir, (err, files) => {
     if (err) {
       throw err;
@@ -174,7 +180,7 @@ const cleanFiles = () => {
     });
   });
 
-  // list all files in the directory
+  // people tweets
   fs.readdir(dir2, (err, files2) => {
     if (err) {
       throw err;
@@ -187,4 +193,4 @@ const cleanFiles = () => {
   });
 };
 
-readTweets();
+//readTweets();
