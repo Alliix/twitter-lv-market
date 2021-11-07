@@ -133,6 +133,14 @@ const readTweets = () => {
                 }
                 const tweetsPeopleJson = JSON.stringify(existingPeopleTweets);
                 fs.writeFileSync(brand.peopleTweets, tweetsPeopleJson, "utf-8");
+                const tweetsBrandJsonWithRetweet = JSON.stringify(
+                  existingBrandTweetsToCheckRetweet
+                );
+                fs.writeFileSync(
+                  brand.brandFile,
+                  tweetsBrandJsonWithRetweet,
+                  "utf-8"
+                );
                 break;
               case brand.accountName &&
                 tweet.userScreenName === brand.accountName:
@@ -146,6 +154,7 @@ const readTweets = () => {
                   !tweetIsInArray(tweet, existingBrandTweets) &&
                   !tweet.retweetedId
                 ) {
+                  totalWrittenTweetCount++;
                   existingBrandTweets.push({ ...tweet, retweetCount: 0 });
                   const tweetsBrandJson = JSON.stringify(existingBrandTweets);
                   fs.writeFileSync(brand.brandFile, tweetsBrandJson, "utf-8");

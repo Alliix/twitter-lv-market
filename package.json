@@ -1,0 +1,19 @@
+{
+  "name": "twitter-lv-market",
+  "version": "1.0.0",
+  "description": "",
+  "main": "readFiles.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alliix/twitter-lv-market.git"
+  },
+  "author": "Alina Govoruhina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alliix/twitter-lv-market/issues"
+  },
+  "homepage": "https://github.com/Alliix/twitter-lv-market#readme"
+}
