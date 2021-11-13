@@ -9,7 +9,7 @@ const brandConfig = [
   {
     title: "Rimi",
     searchNames: ["rimi"],
-    accountName: "RimiLatvija",
+    accountName: "MansRimi",
     brandFile: "./brandTweets/rimi.json",
     peopleTweets: "./peopleTweets/rimi.json",
   },

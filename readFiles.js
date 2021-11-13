@@ -201,5 +201,3 @@ const cleanFiles = () => {
     });
   });
 };
-
-//readTweets();
