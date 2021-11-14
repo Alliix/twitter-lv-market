@@ -131,3 +131,4 @@ dmypy.json
 tweet-corpus/
 brandTweets/
 peopleTweets/
+jupyter/tweets/
