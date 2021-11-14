@@ -43,4 +43,28 @@ const fixRimiTweets = () => {
   fs.writeFileSync("", JSON.stringify(rimiPeopleTweets), "utf-8");
 };
 
+const addLabels = () => {
+  const dir = "./peopleTweets";
+  fs.readdir(dir, (err, files) => {
+    if (err) {
+      throw err;
+    }
+
+    files.forEach((file) => {
+      let tweets = fs.readFileSync(`${dir}/${file}`, "utf-8");
+      tweets = JSON.parse(tweets);
+      tweets = tweets.map((tweet) => {
+        if (tweet.label != null) {
+          if (tweet.label < 0) {
+            return { ...tweet, label: 0 };
+          } else return tweet;
+        } else {
+          return { ...tweet, label: null };
+        }
+      });
+      fs.writeFileSync(dir + "/" + file, JSON.stringify(tweets), "utf-8");
+    });
+  });
+};
+
 readTweetsLength();
