@@ -67,4 +67,29 @@ const addLabels = () => {
   });
 };
 
-readTweetsLength();
+getLabeledData = () => {
+  const dir = "./peopleTweets";
+  fs.readdir(dir, (err, files) => {
+    if (err) {
+      throw err;
+    }
+    let labeledTweets = [];
+    files.forEach((file) => {
+      try {
+        let tweets = fs.readFileSync(`${dir}/${file}`, "utf-8");
+        tweets = JSON.parse(tweets);
+        labeledTweets = [
+          ...labeledTweets,
+          ...tweets.filter((tweet) => tweet.label != null),
+        ];
+      } catch (err) {
+        console.log(err, file);
+      }
+    });
+    fs.writeFileSync(
+      dir + "/allLabeledTweets.json",
+      JSON.stringify(labeledTweets),
+      "utf-8"
+    );
+  });
+};
