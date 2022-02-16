@@ -135,3 +135,4 @@ jupyter/tweets/
 jupyter/data/
 Naive_Bayes/tweets
 BERTmasker/twitter
+BERTmasker/twitterModel/pytorch_model.bin
