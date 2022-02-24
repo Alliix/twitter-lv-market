@@ -106,6 +106,7 @@ celerybeat.pid
 .venv
 env/
 venv/
+venv38/
 ENV/
 env.bak/
 venv.bak/
@@ -141,3 +142,6 @@ BERT/text
 BERT/models
 BERT/models2
 BERT/models3
+BERT/models4
+electra/models
+LaBSE/models
